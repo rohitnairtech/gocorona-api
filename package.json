@@ -1,0 +1,22 @@
+{
+  "name": "gocorona.aibuddha.in",
+  "version": "1.0.0",
+  "description": "Corona data API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rohitnairtech/gocorona-api.git"
+  },
+  "author": "Rohit Nair",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rohitnairtech/gocorona-api/issues"
+  },
+  "homepage": "https://github.com/rohitnairtech/gocorona-api#readme",
+  "dependencies": {
+    "axios": "^0.19.2"
+  }
+}
