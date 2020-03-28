@@ -2,41 +2,37 @@
 const express = require('express');
 const app = express();
 const axios = require('axios');
+const cheerio = require('cheerio'), cheerioTableparser = require('cheerio-tableparser');
 const cors = require('cors');
 const PORT = process.env.PORT || 5000
 
 app.use(express.json({limit: '20mb'}));
 app.use(cors({origin: '*'}));
 
-const headers = {
-   "x-rapidapi-host": "covid-193.p.rapidapi.com",
-   "x-rapidapi-key": "3bb8346e10msh2476e27ff9f9b31p15b886jsn79d66434a963"
-};
 
-var apiData;
+
+var apiData = {};
 
 const updateData = ()=>{
 
-   let IndianStats, WorldData;
-   const WorldStats = {infected:0,dead:0,recovered:0,critical:0};
+   let IndianStats, WorldData = {}, WorldStats;
 
-   axios.get("https://covid-193.p.rapidapi.com/statistics", {headers}).then(({data})=>{
-      const {results, response} = data;
-      WorldData = response;
-      let i;
-      for(i = 0; i<results; i++){
-         const country = response[i];
-         if(country.country === 'India'){
-            const cases = country.cases;
-            IndianStats = {infected:cases.total, dead:country.deaths.total, recovered:cases.recovered, critical:cases.critical};
+   axios.get("https://www.worldometers.info/coronavirus").then(({data})=>{
+      const $ = cheerio.load(data);
+      cheerioTableparser($);
+      data = $('#main_table_countries_today tbody').parsetable(true,true,true);
+      for(let i in data[0]){
+         WorldData[data[0][i]] = {infected:data[1][i], new_cases:data[2][i], dead:data[3][i], new_deaths:data[4][i], recovered:data[5][i], active_cases:data[6][i], critical:data[7][i], first_report:data[10][i]};
+         if(data[0][i] == 'India'){
+            IndianStats = {infected:data[1][i], new_cases:data[2][i], dead:data[3][i], new_deaths:data[4][i], recovered:data[5][i], active_cases:data[6][i], critical:data[7][i], first_report:data[10][i]};
          }
-         WorldStats.infected += country.cases.total;
-         WorldStats.dead += country.deaths.total;
-         WorldStats.recovered += country.cases.recovered;
-         WorldStats.critical += country.cases.critical;
+         else if(data[0][i] == 'Total:'){
+            WorldStats = {infected:data[1][i], new_cases:data[2][i], dead:data[3][i], new_deaths:data[4][i], recovered:data[5][i], active_cases:data[6][i], critical:data[7][i], first_report:'Nov 17, 2019'};
+         }
       }
       console.log(WorldStats);
-   apiData = {status:200, success:true, data:{indian_stats:IndianStats, world_stats:WorldStats, world_data:WorldData}};
+      console.log(IndianStats);
+      apiData = {status:200, success:true, data:{indian_stats:IndianStats, world_stats:WorldStats, world_data:WorldData}};
    
    }).catch(e=>console.log(e));
 
