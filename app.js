@@ -2,9 +2,11 @@
 const express = require('express');
 const app = express();
 const axios = require('axios');
+const cors = require('cors');
 const PORT = process.env.PORT || 5000
 
 app.use(express.json({limit: '20mb'}));
+app.use(cors({origin: '*'}));
 
 const headers = {
    "x-rapidapi-host": "covid-193.p.rapidapi.com",
