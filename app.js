@@ -1,4 +1,9 @@
+"use strict";
+const express = require('express');
+const app = express();
 const axios = require('axios');
+
+app.use(express.json({limit: '20mb'}));
 
 const headers = {
    "x-rapidapi-host": "covid-193.p.rapidapi.com",
@@ -23,3 +28,9 @@ const WorldStats = {infected:0,dead:0,recovered:0,critical:0};
       }
       console.log(WorldStats);
    }).catch(e=>console.log(e));
+
+ app.get('/', (req, res)=>{
+   res.send(IndiaStats);
+});
+
+ app.listen(80, () => console.log(`Dashboard server is listening on ${port }`));
