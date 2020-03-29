@@ -1,15 +1,18 @@
-const {get} = require('axios')
+const {get} = require('axios');
+
+get("https://gocorona-aibuddha.herokuapp.com/all").then(({data})=>{
+	data = data.data;
+	console.log(data);
+	console.log(Object.keys(data));
+});
 
 const ageGroup = {children:0, working:0, elderly:0}, gender = {male:0, female:0};
-
+/*
 get("https://api.rootnet.in/covid19-in/unofficial/covid19india.org").then(({data})=>{
 	let count = 0;
 	data = data.data;
 	for(let i in data.rawPatientData){
 		const patient = data.rawPatientData[i];
-		if('place_attributes' in patient){
-			console.log(patient);
-		}
 		if(patient.contractedFrom !== ''){
 			count++;
 		}
@@ -35,4 +38,4 @@ get("https://api.rootnet.in/covid19-in/unofficial/covid19india.org").then(({data
 		}
 	}
 	console.log(count);
-});
+});*/

@@ -83,11 +83,11 @@ const updateData = ()=>{
 
 
       }).catch(e=>console.log(e));
+   apiData = {status:200, success:true, data:{indian_stats:IndianStats, world_stats:WorldStats, world_data:WorldData, indian_data:{stats:IndianStats, statewise:IndianStateWise, demography:{age:ageGroup, gender:gender}}}};
 
     app.listen(PORT, () => console.log(`Dashboard server is listening on ${PORT}`));
    }).catch(e=>console.log(e));
 
-apiData = {status:200, success:true, data:{indian_stats:IndianStats, world_stats:WorldStats, world_data:WorldData, indian_data:{stats:IndianStats, statewise:IndianStateWise, demography:{age:ageGroup, gender:gender}}}};
 
    setTimeout(()=>{
       updateData();
