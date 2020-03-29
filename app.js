@@ -32,56 +32,60 @@ const updateData = ()=>{
       }
       console.log(WorldStats);
       console.log(IndianStats);
+      
+      get("https://api.rootnet.in/covid19-in/unofficial/covid19india.org/statewise").then(({data})=>{
+         data = data.data;
+         const total = data.total;
+         IndianStats.infected = total.confirmed, IndianStats.recovered = total.recovered, IndianStats.dead = total.deaths, IndianStats.active = total.active;
+         for (let i in data.statewise){
+            const stateData = data.statewise[i];
+            stateData.infected = stateData.confirmed, stateData.dead = stateData.deaths;
+            delete stateData.confirmed;
+            delete stateData.deaths;
+            IndianStateWise.push(stateData);
+         }
+      console.log(IndianStats);
+      }).catch(e=>console.log(e));
    
+      get("https://api.rootnet.in/covid19-in/unofficial/covid19india.org").then(({data})=>{
+         let count = 0;
+         data = data.data;
+         for(let i in data.rawPatientData){
+            const patient_data = data.rawPatientData[i];
+            if(patient_data.contractedFrom !== ''){
+               count++;
+            }
+            if(patient_data.ageEstimate !== ''){
+               const age = parseInt(patient_data.ageEstimate);
+               if(age < 15){
+                  ageGroup.children++;
+               }
+               else if(age < 65){
+                  ageGroup.working++;
+               }
+               else{
+                  ageGroup.elderly++;
+               }
+            }
+            if(patient_data.gender !== ''){
+               if(patient_data.gender === 'female'){
+                  gender.female++;
+               }
+               else{
+                  gender.male++;
+               }
+            }
+         }
+         console.log(count);
+
+
+
+
+
+      }).catch(e=>console.log(e));
+
+    app.listen(PORT, () => console.log(`Dashboard server is listening on ${PORT}`));
    }).catch(e=>console.log(e));
-
-   get("https://api.rootnet.in/covid19-in/unofficial/covid19india.org/statewise").then(({data})=>{
-      data = data.data;
-      const total = data.total;
-      IndianStats.infected = total.confirmed, IndianStats.recovered = total.recovered, IndianStats.dead = total.deaths, IndianStats.active = total.active;
-      for (let i in data.statewise){
-         const stateData = data.statewise[i];
-         stateData.infected = stateData.confirmed, stateData.dead = stateData.deaths;
-         delete stateData.confirmed;
-         delete stateData.deaths;
-         IndianStateWise.push(stateData);
-      }
-   });
-   console.log(IndianStats);
-
-
-
-get("https://api.rootnet.in/covid19-in/unofficial/covid19india.org").then(({data})=>{
-   let count = 0;
-   data = data.data;
-   for(let i in data.rawPatientData){
-      const patient_data = data.rawPatientData[i];
-      if(patient_data.contractedFrom !== ''){
-         count++;
-      }
-      if(patient.ageEstimate !== ''){
-         const age = parseInt(patient.ageEstimate);
-         if(age < 15){
-            ageGroup.children++;
-         }
-         else if(age < 65){
-            ageGroup.working++;
-         }
-         else{
-            ageGroup.elderly++;
-         }
-      }
-      if(patient.gender !== ''){
-         if(patient.gender === 'female'){
-            gender.female++;
-         }
-         else{
-            gender.male++;
-         }
-      }
-   }
-   console.log(count);
-});
 
 apiData = {status:200, success:true, data:{indian_stats:IndianStats, world_stats:WorldStats, world_data:WorldData, indian_data:{stats:IndianStats, statewise:IndianStateWise, demography:{age:ageGroup, gender:gender}}}};
 
@@ -92,6 +96,10 @@ apiData = {status:200, success:true, data:{indian_stats:IndianStats, world_stats
 
 updateData();
 
+
+ app.get('/', (req, res)=>{
+   res.sendFile(__dirname+'/index.html');
+});
 
  app.get('/all', (req, res)=>{
    res.json(apiData);
@@ -109,5 +117,3 @@ app.get('/india/demography', (req, res)=>{
  app.get('/world', (req, res)=>{
    res.json({status:200, success:true, data:{stats:WorldStats, countrywise:WorldData}});
 });
-
- app.listen(PORT, () => console.log(`Dashboard server is listening on ${PORT}`));
