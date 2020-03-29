@@ -87,12 +87,53 @@ for patient in covid_data:
 					print(ent.text)
 
 print("FROM COUNTRY DATA")
-
+giojs = []
 
 print()
 print(fromCountry)
+
+
+def addGioData(e, i='IN'):
+	gioDataLen = len(giojs)
+	if gioDataLen:
+		for x,gio in enumerate(giojs):
+			if gio["e"] == e and gio["i"] == i:
+				gio["v"] += 1
+				break
+			if gioDataLen == (x+1):
+				giojs.append({'e':e, 'i':'IN', 'v':1})
+	else:
+		print('EEEEE')
+		print(e)
+		print(i)
+		giojs.append({'e':e, 'i':'IN', 'v':1})	
+
+
+
+
+
+for country in fromCountry:
+	country = fromCountry[country]
+	GPE_count = len(country)
+	print(GPE_count)
+	if GPE_count > 1:
+		for x,code in enumerate(country):
+			if x == (GPE_count-1):
+				addGioData(code, 'IN')
+			else:
+				print(x)
+				print(GPE_count-1)
+				print(x == (GPE_count-1))
+				addGioData(code, country[x+1][0])				
+	else:
+		addGioData(country[0])
+
+
 with open('data.json', 'w') as outfile:
     json.dump(fromCountry, outfile)
+
+with open('gio.json', 'w') as outfile:
+    json.dump(giojs, outfile)
 print(len(fromCountry))
 print()
 print("Error log")

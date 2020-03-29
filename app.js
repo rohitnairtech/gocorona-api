@@ -5,6 +5,7 @@ const {get} = require('axios');
 const cheerio = require('cheerio'), cheerioTableparser = require('cheerio-tableparser');
 const cors = require('cors');
 const PORT = process.env.PORT || 5000
+const gioData = require('./gio.json');
 
 app.use(express.json({limit: '20mb'}));
 app.use(cors({origin: '*'}));
@@ -83,7 +84,7 @@ const updateData = ()=>{
 
 
       }).catch(e=>console.log(e));
-   apiData = {status:200, success:true, data:{indian_stats:IndianStats, world_stats:WorldStats, world_data:WorldData, indian_data:{stats:IndianStats, statewise:IndianStateWise, demography:{age:ageGroup, gender:gender}}}};
+   apiData = {status:200, success:true, data:{indian_stats:IndianStats, world_stats:WorldStats, world_data:WorldData, indian_data:{stats:IndianStats, statewise:IndianStateWise, demography:{age:ageGroup, gender:gender}, gio:gioData}}};
 
     app.listen(PORT, () => console.log(`Dashboard server is listening on ${PORT}`));
    }).catch(e=>console.log(e));
@@ -116,4 +117,8 @@ app.get('/india/demography', (req, res)=>{
 
  app.get('/world', (req, res)=>{
    res.json({status:200, success:true, data:{stats:WorldStats, countrywise:WorldData}});
+});
+
+app.get('/spread', (req, res)=>{
+   res.json({status:200, success:true, data:{spread:gioData}});
 });
