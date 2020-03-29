@@ -1,19 +1,36 @@
-const {get} = require('axios');
+const {get} = require('axios')
 
-let children = 0, working = 0, elderly = 0, men = 0, female = 0;
+const ageGroup = {children:0, working:0, elderly:0}, gender = {male:0, female:0};
 
 get("https://api.rootnet.in/covid19-in/unofficial/covid19india.org").then(({data})=>{
 	let count = 0;
 	data = data.data;
 	for(let i in data.rawPatientData){
-		const patient_data = data.rawPatientData[i];
-		if(patient_data.contractedFrom !== ''){
+		const patient = data.rawPatientData[i];
+		if('place_attributes' in patient){
+			console.log(patient);
+		}
+		if(patient.contractedFrom !== ''){
 			count++;
-			console.log(patient_data);
 		}
 		if(patient.ageEstimate !== ''){
-			switch(Number(patient.ageEstimate)){
-				case 
+			const age = parseInt(patient.ageEstimate);
+			if(age < 15){
+				ageGroup.children++;
+			}
+			else if(age < 65){
+				ageGroup.working++;
+			}
+			else{
+				ageGroup.elderly++;
+			}
+		}
+		if(patient.gender !== ''){
+			if(patient.gender === 'female'){
+				gender.female++;
+			}
+			else{
+				gender.male++;
 			}
 		}
 	}
