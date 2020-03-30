@@ -119,6 +119,6 @@ app.get('/india/demography', (req, res)=>{
    res.json({status:200, success:true, data:{stats:WorldStats, countrywise:WorldData}});
 });
 
-app.get('/spread', (req, res)=>{
+app.get('/india/travel-route', (req, res)=>{
    res.json({status:200, success:true, data:{spread:gioData}});
 });
