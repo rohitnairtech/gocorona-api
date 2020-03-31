@@ -58,10 +58,10 @@ const updateData = ()=>{
             }
             if(patient_data.ageEstimate !== ''){
                const age = parseInt(patient_data.ageEstimate);
-               if(age < 15){
+               if(age < 25){
                   ageGroup.children++;
                }
-               else if(age < 65){
+               else if(age < 55){
                   ageGroup.working++;
                }
                else{
