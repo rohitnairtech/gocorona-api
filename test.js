@@ -1,12 +1,53 @@
 const {get} = require('axios');
+const stateList = require('./stateList.json');
 
-get("https://gocorona-aibuddha.herokuapp.com/all").then(({data})=>{
-	data = data.data;
-	console.log(data);
-	console.log(Object.keys(data));
+const patientCityWise = {}
+
+
+const cityInStateList = (city, district)=>{
+	city = city.toLowerCase();
+	district = district.toLowerCase();
+	for(let i in stateList){
+		const {name} = stateList[i];
+		if(name.toLowerCase() == city){
+			return city;
+		}
+		else if(name.toLowerCase() == district){
+			return district;
+		}
+	}
+	return false;
+
+}
+
+get("https://api.rootnet.in/covid19-in/unofficial/covid19india.org").then(({data})=>{
+	const {rawPatientData} = data.data;
+	for (let i in rawPatientData){
+		const patient = rawPatientData[i];
+		if('city' in patient && patient.city !== ''){
+			//check if city found in city - state list
+			const city = cityInStateList(patient.city, patient.district);
+			if(city){
+				if(!(city in patientCityWise)){
+					patientCityWise[city] = {infected:0, dead:0, recovered:0};
+				}
+				patientCityWise[city].infected++;
+				switch(patient.status){
+					case 'Recovered':
+						patientCityWise[city].recovered++;
+						break;
+					case 'Deceased':
+						patientCityWise[city].dead++;
+						break;
+				}
+			}
+		}
+
+	}
+console.log(patientCityWise);
+console.log(count);
 });
 
-const ageGroup = {children:0, working:0, elderly:0}, gender = {male:0, female:0};
 /*
 get("https://api.rootnet.in/covid19-in/unofficial/covid19india.org").then(({data})=>{
 	let count = 0;

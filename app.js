@@ -6,14 +6,36 @@ const cheerio = require('cheerio'), cheerioTableparser = require('cheerio-tablep
 const cors = require('cors');
 const PORT = process.env.PORT || 5000
 const gioData = require('./gio.json');
+const stateList = require('./stateList.json');
 
 app.use(express.json({limit: '20mb'}));
 app.use(cors({origin: '*'}));
 
 
 
+const patientCityWise = {};
 var apiData = {}, IndianStats, IndianStateWise = [], WorldData = {}, WorldStats;
 const ageGroup = {children:0, working:0, elderly:0}, gender = {male:0, female:0};
+
+
+const cityInStateList = (city, district)=>{
+   city = city.toLowerCase();
+   district = district.toLowerCase();
+   for(let i in stateList){
+      const {name} = stateList[i];
+      if(name.toLowerCase() == city){
+         return city;
+      }
+      else if(name.toLowerCase() == district){
+         return district;
+      }
+   }
+   return false;
+}
+
+
+
+
 
 const updateData = ()=>{
 
