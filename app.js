@@ -13,8 +13,8 @@ app.use(cors({origin: '*'}));
 
 
 
-const patientCityWise = {};
-var apiData = {}, IndianStats, IndianStateWise = [], WorldData = {}, WorldStats;
+const reportCityWise = {};
+var apiData = {status:200, success:true, data:{}}, IndianStats, IndianStateWise = [], WorldData = {}, WorldStats;
 const ageGroup = {children:0, working:0, elderly:0}, gender = {male:0, female:0};
 
 
@@ -71,12 +71,26 @@ const updateData = ()=>{
       }).catch(e=>console.log(e));
    
       get("https://api.rootnet.in/covid19-in/unofficial/covid19india.org").then(({data})=>{
-         let count = 0;
-         data = data.data;
-         for(let i in data.rawPatientData){
-            const patient_data = data.rawPatientData[i];
-            if(patient_data.contractedFrom !== ''){
-               count++;
+         const {rawPatientData} = data.data;
+         for(let i in rawPatientData){
+            const patient_data = rawPatientData[i];
+            if('city' in patient_data && patient_data.city !== ''){
+               //check if city found in city - state list
+               const city = cityInStateList(patient_data.city, patient_data.district);
+               if(city){
+                  if(!(city in reportCityWise)){
+                     reportCityWise[city] = {infected:0, dead:0, recovered:0};
+                  }
+                  reportCityWise[city].infected++;
+                  switch(patient_data.status){
+                     case 'Recovered':
+                        reportCityWise[city].recovered++;
+                        break;
+                     case 'Deceased':
+                        reportCityWise[city].dead++;
+                        break;
+                  }
+               }
             }
             if(patient_data.ageEstimate !== ''){
                const age = parseInt(patient_data.ageEstimate);
@@ -99,14 +113,13 @@ const updateData = ()=>{
                }
             }
          }
-         console.log(count);
 
-
+console.log(reportCityWise);
 
 
 
       }).catch(e=>console.log(e));
-   apiData = {status:200, success:true, data:{indian_stats:IndianStats, world_stats:WorldStats, world_data:WorldData, indian_data:{stats:IndianStats, statewise:IndianStateWise, demography:{age:ageGroup, gender:gender}, gio:gioData}}};
+   apiData.data = {indian_stats:IndianStats, world_stats:WorldStats, world_data:WorldData, indian_data:{stats:IndianStats, statewise:IndianStateWise, demography:{age:ageGroup, gender:gender}, gio:gioData}};
 
     app.listen(PORT, () => console.log(`Dashboard server is listening on ${PORT}`));
    }).catch(e=>console.log(e));
@@ -124,23 +137,30 @@ updateData();
    res.sendFile(__dirname+'/index.html');
 });
 
- app.get('/all', (req, res)=>{
+ app.get('/aib', (req, res)=>{
    res.json(apiData);
 });
 
-
- app.get('/india', (req, res)=>{
-   res.json({status:200, success:true, data:{stats:IndianStats, statewise:IndianStateWise}});
-});
-
-app.get('/india/demography', (req, res)=>{
-   res.json({status:200, success:true, data:{age:ageGroup, gender:gender}});
+ app.get('/all', (req, res)=>{
+   postback(res, {world:{stats:WorldStats, countrywise:WorldData},india:{stats:IndianStats, statewise:IndianStateWise, demography:{age:ageGroup, gender:gender}, citywise:reportCityWise}});
 });
 
  app.get('/world', (req, res)=>{
-   res.json({status:200, success:true, data:{stats:WorldStats, countrywise:WorldData}});
+   postback(res, {stats:WorldStats, countrywise:WorldData});
 });
 
-app.get('/india/travel-route', (req, res)=>{
-   res.json({status:200, success:true, data:{spread:gioData}});
+
+app.get('/india', (req, res)=>{
+   postback(res, {stats:IndianStats, statewise:IndianStateWise, demography:{age:ageGroup, gender:gender}});
 });
+
+app.get('/india/city-wise', (req, res)=>{
+   postback(res, {citywise:reportCityWise});
+});
+
+
+const postback = (res, data)=>{
+ let payload = {status:200, success:true, data:{}};
+ payload.data = data;
+ res.json(payload);
+}

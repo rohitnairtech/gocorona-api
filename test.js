@@ -23,16 +23,16 @@ const cityInStateList = (city, district)=>{
 get("https://api.rootnet.in/covid19-in/unofficial/covid19india.org").then(({data})=>{
 	const {rawPatientData} = data.data;
 	for (let i in rawPatientData){
-		const patient = rawPatientData[i];
-		if('city' in patient && patient.city !== ''){
+		const patient_data = rawPatientData[i];
+		if('city' in patient_data && patient_data.city !== ''){
 			//check if city found in city - state list
-			const city = cityInStateList(patient.city, patient.district);
+			const city = cityInStateList(patient_data.city, patient_data.district);
 			if(city){
 				if(!(city in patientCityWise)){
 					patientCityWise[city] = {infected:0, dead:0, recovered:0};
 				}
 				patientCityWise[city].infected++;
-				switch(patient.status){
+				switch(patient_data.status){
 					case 'Recovered':
 						patientCityWise[city].recovered++;
 						break;
@@ -45,38 +45,4 @@ get("https://api.rootnet.in/covid19-in/unofficial/covid19india.org").then(({data
 
 	}
 console.log(patientCityWise);
-console.log(count);
 });
-
-/*
-get("https://api.rootnet.in/covid19-in/unofficial/covid19india.org").then(({data})=>{
-	let count = 0;
-	data = data.data;
-	for(let i in data.rawPatientData){
-		const patient = data.rawPatientData[i];
-		if(patient.contractedFrom !== ''){
-			count++;
-		}
-		if(patient.ageEstimate !== ''){
-			const age = parseInt(patient.ageEstimate);
-			if(age < 15){
-				ageGroup.children++;
-			}
-			else if(age < 65){
-				ageGroup.working++;
-			}
-			else{
-				ageGroup.elderly++;
-			}
-		}
-		if(patient.gender !== ''){
-			if(patient.gender === 'female'){
-				gender.female++;
-			}
-			else{
-				gender.male++;
-			}
-		}
-	}
-	console.log(count);
-});*/
