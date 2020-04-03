@@ -45,12 +45,12 @@ const updateData = ()=>{
       cheerioTableparser($);
       data = $('#main_table_countries_today tbody').parsetable(true,true,true);
       for(let i=0; i<data[0].length; i++){
-         WorldData[data[0][i]] = {infected:data[1][i], new_cases:data[2][i], dead:data[3][i], new_deaths:data[4][i], recovered:data[5][i], active:data[6][i], critical:data[7][i], first_report:data[10][i]};
+         WorldData[data[0][i]] = {infected:data[1][i], new_cases:data[2][i], dead:data[3][i], new_deaths:data[4][i], recovered:data[5][i], active:data[6][i], critical:data[7][i]};
          if(data[0][i] == 'India'){
-            IndianStats = {infected:data[1][i], new_cases:data[2][i], dead:data[3][i], new_deaths:data[4][i], recovered:data[5][i], active:data[6][i], critical:data[7][i], first_report:data[10][i]};
+            IndianStats = {infected:data[1][i], new_cases:data[2][i], dead:data[3][i], new_deaths:data[4][i], recovered:data[5][i], active:data[6][i], critical:data[7][i]};
          }
          else if(data[0][i] == 'Total:'){
-            WorldStats = {infected:data[1][i], new_cases:data[2][i], dead:data[3][i], new_deaths:data[4][i], recovered:data[5][i], active:data[6][i], critical:data[7][i], first_report:'Nov 17, 2019'};
+            WorldStats = {infected:data[1][i], new_cases:data[2][i], dead:data[3][i], new_deaths:data[4][i], recovered:data[5][i], active:data[6][i], critical:data[7][i]};
          }
       }
       console.log(WorldStats);
@@ -121,7 +121,7 @@ console.log(reportCityWise);
       }).catch(e=>console.log(e));
    apiData.data = {indian_stats:IndianStats, world_stats:WorldStats, world_data:WorldData, indian_data:{stats:IndianStats, statewise:IndianStateWise, demography:{age:ageGroup, gender:gender}, gio:gioData}};
 
-    app.listen(PORT, () => console.log(`Dashboard server is listening on ${PORT}`));
+    app.listen(PORT, () => console.log(`Corona app server is listening on ${PORT}`));
    }).catch(e=>console.log(e));
 
 
