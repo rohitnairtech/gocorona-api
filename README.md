@@ -6,4 +6,4 @@ Express API for latest COVID-19 stats globally, sourced from [Worldometer](https
 
 Stats: https://gocorona-aibuddha.herokuapp.com/
 
-Website: http://gocorona.aibuddha.in/
+Website: https://gocorona.aibuddha.in/
